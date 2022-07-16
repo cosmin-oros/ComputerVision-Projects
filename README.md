@@ -1,2 +1,2 @@
 # Opencv-Projects
-Opencv Projects in Python 
+ComputerVision Projects in Python (opencv)
