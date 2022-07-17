@@ -34,11 +34,24 @@ class SnakeGameClass:
         self.currentLength += distance
         self.previousHead = cx, cy
 
+        # length reduction
+        if self.currentLength > self.allowedLength:
+            for i, length in enumerate(self.lengths):
+                self.currentLength -= length
+                self.lengths.pop(i)
+                self.points.pop(i)
+                if self.currentLength < self.allowedLength:
+                    break
+
         # draw snake
-        for i, point in enumerate(self.points):
-            if i != 0:
-                cv2.line(imgMain, self.points[i-1], point, (0, 255, 255), 20)
-        cv2.circle(img, self.points[-1], 20, (200, 0, 200), cv2.FILLED)
+        if self.points:
+            for i, point in enumerate(self.points):
+                if i != 0:
+                    cv2.line(imgMain, self.points[i-1], point, (0, 255, 255), 20)
+            cv2.circle(imgMain, self.points[-1], 20, (200, 0, 200), cv2.FILLED)
+        return imgMain
+
+game = SnakeGameClass()
 
 
 while True:
@@ -49,6 +62,7 @@ while True:
     if hands:
         lmList = hands[0]['lmList']
         pointIndex = lmList[8][0:2]
+        img = game.update(img, pointIndex)
 
     cv2.imshow("Image",img)
     cv2.waitKey(1)
