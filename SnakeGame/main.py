@@ -1,4 +1,6 @@
 import math
+import random
+
 import cv2
 import cvzone
 import numpy as np
@@ -12,7 +14,7 @@ cap.set(4, 720)
 detector = HandDetector(detectionCon=0.8, maxHands=1)
 
 class SnakeGameClass:
-    def __init__(self):
+    def __init__(self, pathFood):
         # all points of the snake
         self.points = []
         # distance between each point
@@ -23,6 +25,14 @@ class SnakeGameClass:
         self.allowedLength = 150
         # previous head point
         self.previousHead = 0, 0
+
+        self.imgFood = cv2.imread(pathFood, cv2.IMREAD_UNCHANGED)
+        self.hFood, self.wFood, _ = self.imgFood.shape
+        self.foodPoint = 0, 0
+        self.randomFoodLocation()
+
+    def randomFoodLocation(self):
+        self.foodPoint = random.randint(100, 1000), random.randint(100, 600)
 
     def update(self, imgMain, currentHead):
         px, py = self.previousHead
@@ -57,7 +67,7 @@ game = SnakeGameClass()
 while True:
     success, img = cap.read()
     img = cv2.flip(img, 1)
-    hands, img = detector.findHands(img,flipType=False)
+    hands, img = detector.findHands(img, flipType=False)
 
     if hands:
         lmList = hands[0]['lmList']
