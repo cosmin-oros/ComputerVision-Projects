@@ -7,7 +7,10 @@ cap.set(4, 720)
 
 detector = HandDetector(detectionCon=0.8)
 
-
+keys = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
+        ["A", "S", "D", "F", "G", "H", "J", "K", "L", ";"],
+        ["Z", "X", "C", "V", "B", "N", "M", ",", ".", "/"]
+        ]
 
 
 class Button():
@@ -26,14 +29,15 @@ class Button():
 
 buttonList = []
 
-for x in range (0, 5):
-    buttonList.append(Button([100*x, 100], "Q"))
-
 
 while True:
     success, img = cap.read()
     img = detector.findHands(img)
     lmList, bboxInfo = detector.findPosition(img)
+
+    for i in range(len(keys)):
+        for j, key in enumerate(keys[i]):
+            buttonList.append(Button([100 * j + 50, 100 * i + 50], key))
 
     cv2.imshow("Image", img)
     cv2.waitKey(1)
