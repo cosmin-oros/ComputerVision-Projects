@@ -13,31 +13,46 @@ keys = [["Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P"],
         ]
 
 
+def drawAll(img, buttonList):
+    for button in buttonList:
+        x, y = button.pos
+        w, h = button.size
+
+        cv2.rectangle(img, button.pos, (x + w, y + h), (255, 0, 255), cv2.FILLED)
+        cv2.putText(img, button.text, (x + 20, y + 65), cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 4)
+    return img
+
+
 class Button():
     def __init__(self, pos, text, size=[85, 85]):
         self.pos = pos
         self.text = text
         self.size = size
 
-    def draw(self, img):
-        x, y = self.pos
-        w, h =self.size
-
-        cv2.rectangle(img, self.pos, (x+w, y+h), (255, 0, 255), cv2.FILLED)
-        cv2.putText(img, self.text, (x+20, y+65), cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 4)
 
 
 buttonList = []
-
+for i in range(len(keys)):
+    for j, key in enumerate(keys[i]):
+        buttonList.append(Button([100 * j + 50, 100 * i + 50], key))
 
 while True:
     success, img = cap.read()
     img = detector.findHands(img)
     lmList, bboxInfo = detector.findPosition(img)
+    img = drawAll(img, buttonList)
 
-    for i in range(len(keys)):
-        for j, key in enumerate(keys[i]):
-            buttonList.append(Button([100 * j + 50, 100 * i + 50], key))
+    if lmList:
+        for button in buttonList:
+            x, y = button.pos
+            w, h = button.size
+
+            if x < lmList[8][0] < x+w and y < lmList[8][1] < y+h:
+                cv2.rectangle(img, button.pos, (x + w, y + h), (0, 255, 0), cv2.FILLED)
+                cv2.putText(img, button.text, (x + 20, y + 65), cv2.FONT_HERSHEY_PLAIN, 4, (255, 255, 255), 4)
+
+                l, _, _ = detector.findDistance(8, 12, img)
+                print(l)
 
     cv2.imshow("Image", img)
     cv2.waitKey(1)
